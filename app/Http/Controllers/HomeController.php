@@ -24,7 +24,7 @@ class HomeController extends Controller
         $settings = Setting::all();
 
         $hightrate_1 = Product::latest()->first();
-        $hightrate_2 = Product::where('id', '>', 1)->first();
+        $hightrate_2 = Product::oldest()->first();
         return view('project_1.customer.home', compact('banners', 'products_best', 'product_sell','customer','settings' , 'hightrate_1', 'hightrate_2'));
     }
 

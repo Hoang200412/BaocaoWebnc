@@ -61,6 +61,24 @@
                                         <div class="text-center">
                                             <img src="{{ $avatarUrl }}" alt="Avatar" class="rounded-circle mb-2" width="100" height="100">
                                             <h5 class="mb-0">{{ Auth::user()->username }}</h5>
+
+                                            @php
+                                                $avatar = Auth::user()->avatar;
+                                                $avatarUrl = '';
+
+                                                if (!empty($avatar) && Storage::disk('public')->exists($avatar)) {
+                                                    $avatarUrl = asset(Storage::url($avatar));
+                                                } elseif (!empty($avatar)) {
+                                                    $avatarUrl = $avatar;
+                                                } else {
+                                                    $avatarUrl = asset('images/default-avatar.png'); // fallback ảnh mặc định
+                                                }
+                                            @endphp
+
+                                            <img src="{{ $avatarUrl }}" alt="Avatar" class="rounded-circle mb-2" width="100" height="100">
+
+
+                                            <h5 class="mb-0">{{Auth::user()->username}}</h5>
                                         </div>
 
                                         <hr>

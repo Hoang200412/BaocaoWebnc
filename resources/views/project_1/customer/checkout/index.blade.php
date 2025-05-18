@@ -30,6 +30,8 @@
                 @if (isset($product))
                     <input type="hidden" name="quantity" value="{{$quantity}}">
                     <input type="hidden" name="total_price" value="{{$total_price}}">
+                    <input type="hidden" name="product_id" value="{{$product->id}}">
+
                 @elseif (isset($cart_items))
                     @foreach ($cart_items as $item)
                         <input type="hidden" name="cart_id[]" value="{{$item->id}}">
@@ -146,7 +148,7 @@
                             <div>
                                 <button type="submit" class="btn btn-warning">Thanh toán vnpay</button>
                             </div>
-
+                            
 
                         </div>
 

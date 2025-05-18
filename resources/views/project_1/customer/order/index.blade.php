@@ -19,7 +19,7 @@
                     <span class="fw-bold fs-5">Mã đơn hàng:{{ $order->id }}</span>
                     <span class="text-danger">{{$order->status}}</span>
                 </div>
-                
+
                 @foreach ($order->items as $item)
                     <div class="row p-3 border-bottom">
                         <div class="col-1">
