@@ -18,7 +18,7 @@ class HomeController extends Controller
 {
     public function index() {
         $banners = Banner::query()->get();
-        $products_best = Product::where('quantity', '<', 10)->get();
+        $products_best = Product::where('quantity', '<', 100)->get();
         $product_sell = Product::latest()->take(5)->get();
         $customer = User::where('id', 2)->first();
         $settings = Setting::all();

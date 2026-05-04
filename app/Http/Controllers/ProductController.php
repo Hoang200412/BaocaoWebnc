@@ -81,13 +81,10 @@ class ProductController extends Controller
                     // insert to Tags
                     $tagInstance = $this->tag->firstOrCreate([
                         'name'=>$tagItem,
-            
                     ]);
                     $tagIds[]=$tagInstance->id ;
                     
                 }
-                
-                
                   $product->tags()->attach($tagIds);
                 }
             });

@@ -40,6 +40,8 @@ Route::prefix('home')->group(function() {
 
         Route::post('checkout', [CheckoutController::class, 'checkout'])->name('checkout.handle');
 
+        Route::post('checkout/shipping-fee', [CheckoutController::class, 'shippingFee'])->name('checkout.shipping_fee');
+
         Route::get('vnpay/return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
         Route::get('order', [OrderController::class, 'index'])->name('order');

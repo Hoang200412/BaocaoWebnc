@@ -131,6 +131,7 @@ namespace App\Models{
  * @property string $email
  * @property string $address
  * @property string $status
+ * @property string|null $expired_at
  * @property string $total_price
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -143,6 +144,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereExpiredAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order wherePhone($value)

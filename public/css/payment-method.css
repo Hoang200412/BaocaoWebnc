@@ -1,0 +1,88 @@
+.payment-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    display: block;
+}
+
+.payment-card:hover {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.payment-card-active {
+    border-color: #28a745;
+    background-color: #f0f8f4;
+}
+
+.payment-radio:checked+.payment-card {
+    border-color: #28a745;
+    background-color: #f0f8f4;
+}
+
+.payment-option input[type="radio"]:checked+label {
+    border-color: #28a745;
+    background-color: #f0f8f4;
+}
+
+.payment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-info h6 {
+    color: #333;
+    font-weight: 600;
+}
+
+.payment-option input[type="radio"] {
+    display: none;
+}
+
+.payment-option input[type="radio"]:checked+label {
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+.checkout-page .information,
+.checkout-page .product_infor {
+    border-radius: 12px;
+    background: #fff;
+}
+
+.checkout-page .product_infor {
+    position: sticky;
+    top: 16px;
+}
+
+.checkout-page .payment-card {
+    min-height: 84px;
+}
+
+@media (max-width: 991.98px) {
+    .checkout-page .product_infor {
+        position: static;
+    }
+
+    .checkout-page .information,
+    .checkout-page .product_infor {
+        padding: 1rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .checkout-page .payment-card {
+        padding: 12px;
+    }
+
+    .checkout-page .payment-card h6 {
+        font-size: 1rem;
+    }
+
+    .checkout-page .payment-icon i {
+        font-size: 26px !important;
+    }
+}

@@ -44,12 +44,12 @@
                <tr>
                    <th>#</th>
                    <th style="min-width: 120px;">Hình ảnh</th>
-                   <th style="min-width: 120px;">Tên sản phẩm</th>
+                   <th style="min-width: 150px;">Tên sản phẩm</th>
                    <th style="min-width: 300px;" class="text-center">Mô tả sản phẩm</th>
                    <th style="min-width: 150px;">Tên danh mục</th>
                    <th style="min-width: 200px;">Tên thẻ</th>
-                   <th>Số lượng</th>
-                   <th>đơn giá</th>
+                   <th style="min-width: 100px;">Số lượng</th>
+                   <th style="min-width: 100px;">đơn giá</th>
                    <th>Hành động</th>
                </tr>
             </thead>
@@ -71,7 +71,7 @@
                        </td>
 
                        <td>{{$product->quantity}}</td>
-                       <td>{{$product->price}}</td>
+                       <td>{{number_format($product->price)}} đ</td>
                        <td>
                             <div class="d-flex">
                                 <form action="{{route('products.destroy', $product)}}" method="post" onclick="return confirm('Bạn chắc muốn xóa chứ?')">

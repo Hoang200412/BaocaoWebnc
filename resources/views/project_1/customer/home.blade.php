@@ -9,7 +9,8 @@
         <div class="carousel-inner">
             @foreach ($banners as $banner)
                 <div class="carousel-item active">
-                    <img src="{{asset(Storage::url($banner->image_path))}}" class="d-block w-100" alt="...">
+                    <img src="{{ asset(Storage::url($banner->image_path)) }}" 
+                        class="img-fluid rounded-3">
                 </div>
             @endforeach
         </div>
@@ -49,7 +50,9 @@
                 <div class="product-meta rounded-3">
                     <a class="product text-decoration-none text-dark" href="{{route('product', $product)}}">
                         <div class="product-img">
-                            <img src="{{asset(Storage::url($product->image_path))}}" alt="" class="img-fluid rounded-3"> 
+                            @if($product)
+                                <img src="{{asset(Storage::url($product->image_path))}}" alt="" class="img-fluid rounded-3"> 
+                            @endif
                         </div>
                         <div class="product-content p-2 ">
                             <div class="category">
@@ -149,7 +152,9 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="image">
+                                @if($hightrate_1)
                                 <img src="{{asset(Storage::url($hightrate_1->image_path))}}" alt="" class="img-fluid rounded-3">
+                                @endif
                             </div>
                         </div>
                         <div class="col-6">
@@ -181,7 +186,9 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="image">
+                                 @if($hightrate_2)
                                 <img src="{{asset(Storage::url($hightrate_2->image_path))}}" alt="" class="img-fluid rounded-3">
+                                @endif
                             </div>
                         </div>
                         <div class="col-6">

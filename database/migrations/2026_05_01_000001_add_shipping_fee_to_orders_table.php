@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-            $table->string('avatar')->nullable();
-            $table->string('address')->nullable();
+        Schema::table('orders', function (Blueprint $table) {
+            $table->decimal('shipping_fee', 15, 2)->default(0)->after('total_price');
         });
     }
 
@@ -23,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-            $table->dropColumn(['avatar', 'address']);
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropColumn('shipping_fee');
         });
     }
 };

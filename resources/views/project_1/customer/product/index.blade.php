@@ -62,7 +62,7 @@
                     </div>
 
                     <div class="price my-3">
-                        <span class="fs-4 fw-medium text-danger">{{$product->price}}</span>
+                        <span class="fs-4 fw-medium text-danger">{{number_format($product->price)}}</span>
                         <span class="fs-4 fw-medium text-danger">đ</span>
                     </div>
                     
@@ -72,12 +72,16 @@
                             <input type="hidden" name="product_id" value="{{$product->id}}">
                             <div class="d-flex">
                                 <label for="quantity" class="form-label me-3">Số lượng</label>
-                                <input class="quantity" type="number" name="quantity" id="" value="1" min="1"> 
+                                <input class="quantity" type="number" name="quantity" id="" value="1" min="1" max="{{ $product->quantity }}"> 
+                            </div>
+                            <div class="mt-2">
+                                <span class="text-gray">Số lượng trong kho: </span>
+                                <span class="fw-medium">{{ $product->quantity }}</span>
                             </div>
 
                             <div class="option mt-3">
-                                <button type="submit" class="btn btn-dark pay">Mua luôn</button>
-                                <a href="#" class="btn border border-2 border-black add_to_cart" id="add_to_cart" data-url = "{{route('addToCart',['id'=>$product->id])}}">Thêm vào giỏ hàng</a>
+                                <button type="submit" class="btn btn-dark pay" @disabled($product->quantity <= 0)>Mua luôn</button>
+                                <a href="#" class="btn border border-2 border-black add_to_cart {{ $product->quantity <= 0 ? 'disabled' : '' }}" id="add_to_cart" data-url = "{{route('addToCart',['id'=>$product->id])}}" @if($product->quantity <= 0) aria-disabled="true" tabindex="-1" @endif>Thêm vào giỏ hàng</a>
                             </div>
                    
                         </form>
@@ -151,8 +155,9 @@
                     alert('Thêm sản phẩm thành công');
                 } 
             },
-            error: function(data){
-
+            error: function(xhr){
+                const message = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Không thể thêm sản phẩm vào giỏ hàng';
+                alert(message);
             },
      });
   }

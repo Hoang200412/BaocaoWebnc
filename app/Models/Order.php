@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    
     protected $fillable = [
         'user_id',
         'name',
@@ -14,7 +13,11 @@ class Order extends Model
         'email',
         'address',
         'status',
+        'payment_method',
+        'payment_status',
         'total_price',
+        'shipping_fee',
+        'expired_at',
     ];
 
     // Một đơn hàng có nhiều sản phẩm (order items)

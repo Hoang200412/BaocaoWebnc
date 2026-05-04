@@ -1,6 +1,7 @@
 @extends('project_1.customer.layouts.layout')
 
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/payment-method.css') }}">
     <main>
         <div class="container">
             @if ($errors->any())
@@ -38,8 +39,8 @@
                     <input type="hidden" name="total_price" value="{{$total_price}}">
                 @endif
                
-                <div class="row">
-                    <div class="col-7">
+                <div class="row g-4">
+                    <div class="col-12 col-lg-7">
                         <div class="information p-3 border  shadow">
                             <p class="fs-4 fw-medium text-center">Thông tin khách hàng</p>
                             <div class="form-floating mb-3">
@@ -62,9 +63,138 @@
                                 <label for="floatingTextarea2">Địa chỉ</label>
                             </div>
 
+                            <div class="mb-4">
+                                <p class="fs-5 fw-medium mb-3">Phương thức thanh toán</p>
+                                
+                                <div class="payment-method-container">
+                                    <!-- COD Payment -->
+                                    <div class="payment-option mb-3">
+                                        <input class="form-check-input payment-radio" type="radio" name="payment_method" id="payment_cod" value="cod" checked style="display: none;">
+                                        <label for="payment_cod" class="payment-card payment-card-active w-100">
+                                            <div class="d-flex align-items-center">
+                                                <div class="payment-icon me-3">
+                                                    <i class="fas fa-hand-holding-usd" style="font-size: 32px; color: #28a745;"></i>
+                                                </div>
+                                                <div class="payment-info">
+                                                    <h6 class="mb-1">Thanh toán khi nhận hàng</h6>
+                                                    <small class="text-muted">COD - Trả tiền khi nhận sản phẩm</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- VNPay Payment -->
+                                    <div class="payment-option">
+                                        <input class="form-check-input payment-radio" type="radio" name="payment_method" id="payment_vnpay" value="vnpay" style="display: none;">
+                                        <label for="payment_vnpay" class="payment-card w-100">
+                                            <div class="d-flex align-items-center">
+                                                <div class="payment-icon me-3">
+                                                    <i class="fas fa-credit-card" style="font-size: 32px; color: #007bff;"></i>
+                                                </div>
+                                                <div class="payment-info">
+                                                    <h6 class="mb-1">Thanh toán qua VNPay</h6>
+                                                    <small class="text-muted">Thẻ tín dụng, ví điện tử hoặc ngân hàng</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                document.querySelectorAll('.payment-radio').forEach(radio => {
+                                    radio.addEventListener('change', function() {
+                                        document.querySelectorAll('.payment-card').forEach(card => {
+                                            card.classList.remove('payment-card-active');
+                                        });
+                                        if (this.checked) {
+                                            this.nextElementSibling.classList.add('payment-card-active');
+                                        }
+                                    });
+                                });
+                            </script>
+
+                            <script>
+                                (function(){
+                                    const shopShippingUrl = "{{ route('checkout.shipping_fee') }}";
+                                    const subtotal = parseFloat({{ $total_price }});
+                                    const csrfInput = document.querySelector('form input[name="_token"]');
+                                    const csrfToken = csrfInput ? csrfInput.value : '';
+
+                                    function formatVnd(n) {
+                                        return new Intl.NumberFormat('vi-VN').format(n) + ' đ';
+                                    }
+
+                                    async function updateShipping(addressEl, shippingDisplay, grandTotalDisplay, shippingFeeInput, totalPriceInput) {
+                                        const address = addressEl.value || '';
+                                        if (!address.trim()) return;
+
+                                        try {
+                                            const res = await fetch(shopShippingUrl, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': csrfToken
+                                                },
+                                                body: JSON.stringify({ address })
+                                            });
+
+                                            const data = await res.json();
+                                            const fee = Number(data.fee || 0);
+
+                                            if (shippingDisplay) {
+                                                shippingDisplay.textContent = formatVnd(fee);
+                                                if (data.message) {
+                                                    shippingDisplay.title = data.message;
+                                                }
+                                            }
+
+                                            if (shippingFeeInput) {
+                                                shippingFeeInput.value = fee;
+                                            }
+
+                                            const grand = subtotal + fee;
+                                            if (grandTotalDisplay) {
+                                                grandTotalDisplay.textContent = formatVnd(grand);
+                                            }
+
+                                            if (totalPriceInput) {
+                                                totalPriceInput.value = grand;
+                                            }
+                                        } catch (e) {
+                                            console.error(e);
+                                        }
+                                    }
+
+                                    document.addEventListener('DOMContentLoaded', function(){
+                                        const addressEl = document.querySelector('#floatingTextarea2');
+                                        const shippingDisplay = document.getElementById('shipping-display');
+                                        const grandTotalDisplay = document.getElementById('grandtotal-display');
+                                        const shippingFeeInput = document.getElementById('shipping_fee_input');
+                                        const totalPriceInput = document.getElementById('total_price_input');
+
+                                        if (!addressEl) {
+                                            return;
+                                        }
+
+                                        let timer = null;
+                                        addressEl.addEventListener('input', function(){
+                                            clearTimeout(timer);
+                                            timer = setTimeout(function() {
+                                                updateShipping(addressEl, shippingDisplay, grandTotalDisplay, shippingFeeInput, totalPriceInput);
+                                            }, 800);
+                                        });
+
+                                        if (addressEl.value && addressEl.value.trim()) {
+                                            updateShipping(addressEl, shippingDisplay, grandTotalDisplay, shippingFeeInput, totalPriceInput);
+                                        }
+                                    });
+                                })();
+                            </script>
+
                         </div>
                     </div>
-                    <div class="col-5">
+                    <div class="col-12 col-lg-5">
                         <div class="product_infor border border-dark-subtle p-3" >
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">
@@ -116,7 +246,7 @@
                                                         </div>
                                                         <div class="price">
                                                             <span>Giá :</span>
-                                                            <span class="text-danger">{{$product->price}}</span>
+                                                            <span class="text-danger">{{number_format($product->price)}} đ</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -131,21 +261,23 @@
                             <div class="border-bottom border-2 mb-4 py-4">
                                 <div class="d-flex justify-content-between ">
                                     <span>Tạm tính</span>
-                                    <span class="text-danger">{{$total_price}}đ</span>
+                                    <span class="text-danger" id="subtotal-display">{{number_format($total_price)}}đ</span>
                                 </div>
                                 <div class="d-flex justify-content-between "> 
                                     <span>Phí ship</span>
-                                    <span class="text-danger">0 đ</span>
+                                    <span class="text-danger" id="shipping-display">0 đ</span>
                                 </div>
                             </div>
 
                             <div class="d-flex justify-content-between my-3">
                                 <span class="fs-5">Tổng cộng</span>
-                                <span class="fs-5 text-danger">{{$total_price}}đ</span>
+                                <span class="fs-5 text-danger" id="grandtotal-display">{{number_format($total_price)}}đ</span>
                             </div>
+                            <input type="hidden" name="shipping_fee" id="shipping_fee_input" value="0">
+                            <input type="hidden" name="total_price" id="total_price_input" value="{{ $total_price }}">
 
                             <div>
-                                <button type="submit" class="btn btn-warning">Thanh toán vnpay</button>
+                                <button type="submit" class="btn btn-warning">Đặt hàng</button>
                             </div>
 
 
