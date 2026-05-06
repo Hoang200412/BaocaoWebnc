@@ -49,8 +49,18 @@
 
         <div class="mt-3 border-top p-3">
             {{$orders->links()}}
-        </div>
-
-    </div>
-</div>
-@endsection
+                    <td>
+                        <div class="admin-actions">
+                            <a href="{{ route('orders.show', $order->id) }}" class="btn-icon btn-view" data-bs-toggle="tooltip" data-bs-title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            @if($order->status !== 'Đã duyệt')
+                            <form action="{{ route('orders.approve', $order->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn-icon btn-add" data-bs-toggle="tooltip" data-bs-title="Duyệt đơn">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            @endif
+                        </div>
+                    </td>

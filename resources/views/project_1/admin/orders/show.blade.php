@@ -48,7 +48,11 @@
 
             <p class="fw-bold mt-3 fs-5">Tổng đơn hàng: {{ number_format($order->total_price) }} đ</p>
 
-            <a href="{{ route('orders.print', $order->id) }}" class="btn btn-outline-primary mt-3">🖨️ In hóa đơn</a>
+            <div class="mt-3">
+                <a href="{{ route('orders.print', $order->id) }}" class="btn-icon btn-download" data-bs-toggle="tooltip" data-bs-title="In hóa đơn">
+                    <i class="fas fa-print"></i>
+                </a>
+            </div>
         </div>
 
     </div>

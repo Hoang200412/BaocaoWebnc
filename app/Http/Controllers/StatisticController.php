@@ -19,8 +19,11 @@ class StatisticController extends Controller
 
         $dailyStats = $this->getDailyStats($from, $to);
         $topProducts = $this->getTopProducts($from, $to);
+        $kpis = $this->getKPIs($from, $to);
+        $topCustomers = $this->getTopCustomers($from, $to);
+        $orderStats = $this->getOrderStats($from, $to);
 
-        return view('project_1.admin.home', compact('dailyStats', 'topProducts'));
+        return view('project_1.admin.home', compact('dailyStats', 'topProducts', 'kpis', 'topCustomers', 'orderStats'));
     }
 
     public function filter(Request $request)
@@ -30,8 +33,11 @@ class StatisticController extends Controller
 
         $dailyStats = $this->getDailyStats($from, $to);
         $topProducts = $this->getTopProducts($from, $to);
+        $kpis = $this->getKPIs($from, $to);
+        $topCustomers = $this->getTopCustomers($from, $to);
+        $orderStats = $this->getOrderStats($from, $to);
 
-        return view('project_1.admin.home', compact('dailyStats', 'topProducts'));
+        return view('project_1.admin.home', compact('dailyStats', 'topProducts', 'kpis', 'topCustomers', 'orderStats'));
     }
 
     public function exportExcel(Request $request)
@@ -110,5 +116,48 @@ class StatisticController extends Controller
             ->orderByDesc('total_quantity')
             ->limit(5)
             ->get();
+    }
+
+    private function getKPIs($from, $to)
+    {
+        $orders = Order::whereBetween('created_at', [$from, $to])->get();
+        
+        return [
+            'total_revenue' => $orders->sum('total_price'),
+            'total_orders' => $orders->count(),
+            'total_customers' => $orders->pluck('name')->unique()->count(),
+            'avg_order_value' => $orders->count() > 0 ? $orders->sum('total_price') / $orders->count() : 0,
+            'total_products_sold' => $orders->flatMap->items->sum('quantity'),
+        ];
+    }
+
+    private function getTopCustomers($from, $to)
+    {
+        return DB::table('orders')
+            ->whereBetween('created_at', [$from, $to])
+            ->select(
+                DB::raw("CONCAT(name, ' - ', phone) as customer_info"),
+                'name',
+                'phone',
+                'address',
+                DB::raw('COUNT(*) as total_orders'),
+                DB::raw('SUM(total_price) as total_spent')
+            )
+            ->groupBy('name', 'phone', 'address')
+            ->orderByDesc('total_spent')
+            ->limit(10)
+            ->get();
+    }
+
+    private function getOrderStats($from, $to)
+    {
+        $orders = Order::whereBetween('created_at', [$from, $to])->get();
+        
+        return [
+            'completed' => $orders->where('status', 'Đã thanh toán')->count(),
+            'pending' => $orders->where('status', 'Chưa thanh toán')->count(),
+            'approved' => $orders->where('status', 'Đã duyệt')->count(),
+            'failed' => $orders->where('status', 'Thanh toán thất bại')->count(),
+        ];
     }
 }

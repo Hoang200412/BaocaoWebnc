@@ -1,0 +1,176 @@
+/* Admin Icon Buttons & Tooltips Styling */
+
+/* Icon button container */
+.admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Icon button base styling */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* View/Show button */
+.btn-icon.btn-view {
+    background-color: #e7f3ff;
+    color: #0066cc;
+    border-color: #0066cc;
+}
+
+.btn-icon.btn-view:hover {
+    background-color: #0066cc;
+    color: white;
+}
+
+/* Edit button */
+.btn-icon.btn-edit {
+    background-color: #fff3e0;
+    color: #ff9800;
+    border-color: #ff9800;
+}
+
+.btn-icon.btn-edit:hover {
+    background-color: #ff9800;
+    color: white;
+}
+
+/* Delete button */
+.btn-icon.btn-delete {
+    background-color: #ffebee;
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-icon.btn-delete:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Add/Create button */
+.btn-icon.btn-add {
+    background-color: #e8f5e9;
+    color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-icon.btn-add:hover {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Download button */
+.btn-icon.btn-download {
+    background-color: #f3e5f5;
+    color: #9c27b0;
+    border-color: #9c27b0;
+}
+
+.btn-icon.btn-download:hover {
+    background-color: #9c27b0;
+    color: white;
+}
+
+/* Bootstrap tooltip customization */
+.tooltip-inner {
+    background-color: #333;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before,
+.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: #333;
+}
+
+.bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before,
+.bs-tooltip-end .tooltip-arrow::before {
+    border-right-color: #333;
+}
+
+.bs-tooltip-auto[data-popper-placement^="bottom"] .tooltip-arrow::before,
+.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #333;
+}
+
+.bs-tooltip-auto[data-popper-placement^="left"] .tooltip-arrow::before,
+.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: #333;
+}
+
+/* Badge styling for status */
+.status-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+/* Table improvements */
+.admin-table {
+    border-collapse: collapse;
+}
+
+.admin-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.admin-table tbody tr {
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.admin-table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+/* Add button group styling */
+.btn-group-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.875rem;
+    }
+
+    .admin-actions {
+        gap: 0.25rem;
+    }
+}

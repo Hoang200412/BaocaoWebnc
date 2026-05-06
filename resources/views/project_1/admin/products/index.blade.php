@@ -34,8 +34,8 @@
 
 
      <div class="mx-3 p-2">
-         <a href="{{ route('products.create') }}">
-            <button class="btn btn-danger ">Thêm sản phẩm</button>
+         <a href="{{ route('products.create') }}" class="btn btn-add btn-icon" data-bs-toggle="tooltip" data-bs-title="Thêm sản phẩm mới">
+            <i class="fas fa-plus"></i>
          </a>
      </div>
      <div class="table-responsive" style="overflow-x: auto;">
@@ -73,16 +73,18 @@
                        <td>{{$product->quantity}}</td>
                        <td>{{number_format($product->price)}} đ</td>
                        <td>
-                            <div class="d-flex">
-                                <form action="{{route('products.destroy', $product)}}" method="post" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
+                            <div class="admin-actions">
+                                <a class="btn-icon btn-view" href="{{route('products.edit', $product)}}" data-bs-toggle="tooltip" data-bs-title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{route('products.destroy', $product)}}" method="post" class="d-inline">
                                     @csrf
                                     @method('delete')
-                                    <input type="submit"  class="btn btn-danger " value="Xóa" >
+                                    <button type="submit" class="btn-icon btn-delete" data-bs-toggle="tooltip" data-bs-title="Xóa" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </form>
-                                
-                                <a class="btn btn-info mx-1" href="{{route('products.edit', $product)}}">Sửa</a>
                             </div>
-                            
                         </td>
                    </tr>
                @endforeach

@@ -12,8 +12,8 @@
             @endif
 
             <div class="mx-3 p-2">
-                <a href="{{route('tags.create')}}">
-                   <button class="btn btn-danger ">Thêm thẻ</button>
+                <a href="{{route('tags.create')}}" class="btn-icon btn-add" data-bs-toggle="tooltip" data-bs-title="Thêm thẻ mới">
+                   <i class="fas fa-plus"></i>
                 </a>
             </div>
             <div class="px-4">
@@ -31,14 +31,17 @@
                                 <td scope="row" class="text-center">{{$key}}</th>
                                 <td scope="row">{{$tag->name}}</td>
                                 <td scope="row" class="d-flex justify-content-end">
-    
-                                    <form action="{{route('tags.destroy', $tag->id)}}" method="post" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
+                                    <a class="btn-icon btn-view" href="{{route('tags.edit', $tag->id)}}" data-bs-toggle="tooltip" data-bs-title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{route('tags.destroy', $tag->id)}}" method="post" class="d-inline" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
                                         @csrf
                                         @method('delete')
-                                        <input type="submit"  class="btn btn-danger " value="Xóa" >
+                                        <button type="submit" class="btn-icon btn-delete" data-bs-toggle="tooltip" data-bs-title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </form>
-                                    
-                                    <a class="btn btn-info mx-1" href="{{route('tags.edit', $tag->id)}}">Sửa</a>
+                                </td>
                                 </td>
                         
                             </tr>

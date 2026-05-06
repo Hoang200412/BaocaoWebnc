@@ -41,6 +41,11 @@ Route::prefix('home')->group(function() {
         Route::post('checkout', [CheckoutController::class, 'checkout'])->name('checkout.handle');
 
         Route::post('checkout/shipping-fee', [CheckoutController::class, 'shippingFee'])->name('checkout.shipping_fee');
+        Route::post('checkout/calculate-shipping', [CheckoutController::class, 'calculateShippingByLocation'])->name('checkout.calculate_shipping');
+
+        Route::get('locations/provinces', [CheckoutController::class, 'getProvinces'])->name('locations.provinces');
+        Route::get('locations/{province}/districts', [CheckoutController::class, 'getDistricts'])->name('locations.districts');
+        Route::get('locations/{province}/{district}/wards', [CheckoutController::class, 'getWards'])->name('locations.wards');
 
         Route::get('vnpay/return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
@@ -130,4 +135,3 @@ Route::middleware(['auth',isAdmin::class])->prefix('admin')->group(function () {
 
     
 });
-

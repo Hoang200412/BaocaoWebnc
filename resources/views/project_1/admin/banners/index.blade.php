@@ -45,10 +45,12 @@
     
                                 </td>
                                 <td>
-                                    <form action="{{route('banners.destroy', $banner)}}" method="post" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
+                                    <form action="{{route('banners.destroy', $banner)}}" method="post" class="d-inline" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
                                         @csrf
                                         @method('delete')
-                                        <input type="submit" class="btn btn-danger" value="Xóa">
+                                        <button type="submit" class="btn-icon btn-delete" data-bs-toggle="tooltip" data-bs-title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>

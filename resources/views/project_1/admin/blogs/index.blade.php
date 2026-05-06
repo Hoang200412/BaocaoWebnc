@@ -18,8 +18,8 @@
 
 
      <div class="mx-3 p-2">
-         <a href="{{ route('blogs.create') }}">
-            <button class="btn btn-danger ">Thêm tin tức</button>
+         <a href="{{ route('blogs.create') }}" class="btn-icon btn-add" data-bs-toggle="tooltip" data-bs-title="Thêm bài viết mới">
+            <i class="fas fa-plus"></i>
          </a>
      </div>
      <div class="table-responsive" style="overflow-x: auto;">
@@ -45,16 +45,18 @@
                        <td>{{$blog->content}}</td>
                        <td>{{$blog->author}}</td>
                        <td>
-                            <div class="d-flex">
-                                <form action="{{route('blogs.destroy', $blog)}}" method="post" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
+                            <div class="admin-actions">
+                                <a class="btn-icon btn-view" href="{{route('blogs.edit', $blog)}}" data-bs-toggle="tooltip" data-bs-title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{route('blogs.destroy', $blog)}}" method="post" class="d-inline">
                                     @csrf
                                     @method('delete')
-                                    <input type="submit"  class="btn btn-danger " value="Xóa" >
+                                    <button type="submit" class="btn-icon btn-delete" data-bs-toggle="tooltip" data-bs-title="Xóa" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </form>
-                                
-                                <a class="btn btn-info mx-1" href="{{route('blogs.edit', $blog)}}">Sửa</a>
                             </div>
-                            
                         </td>
                    </tr>
                @endforeach

@@ -12,8 +12,8 @@
             @endif
 
             <div class="mx-3 p-2">
-                <a href="{{route('categories.create')}}">
-                   <button class="btn btn-danger ">Thêm danh mục</button>
+                <a href="{{route('categories.create')}}" class="btn-icon btn-add" data-bs-toggle="tooltip" data-bs-title="Thêm danh mục mới">
+                   <i class="fas fa-plus"></i>
                 </a>
             </div>
             <div class="px-4">
@@ -31,14 +31,16 @@
                                 <td scope="row" class="text-center">{{$key}}</th>
                                 <td scope="row">{{$category->name}}</td>
                                 <td class="d-flex justify-content-end">
-    
-                                    <form action="{{route('categories.destroy', $category->id)}}" method="post" onclick="return  confirm('Bạn chắc muốn xóa chứ?')">
+                                    <a class="btn-icon btn-view" href="{{route('categories.edit', $category->id)}}" data-bs-toggle="tooltip" data-bs-title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{route('categories.destroy', $category->id)}}" method="post" class="d-inline" onclick="return  confirm('Bạn chắc muốn xóa chứ?')">
                                         @csrf
                                         @method('delete')
-                                        <input type="submit"  class="btn btn-danger " value="Xóa" >
+                                        <button type="submit" class="btn-icon btn-delete" data-bs-toggle="tooltip" data-bs-title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </form>
-                                    
-                                    <a class="btn btn-info mx-1" href="{{route('categories.edit', $category->id)}}">Sửa</a>
                                 </td>
                         
                             </tr>

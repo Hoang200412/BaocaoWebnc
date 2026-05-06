@@ -7,12 +7,10 @@ use App\Http\Requests\CheckoutRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
-use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Cartitem;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 
 
@@ -45,6 +43,14 @@ class CheckoutController extends Controller
         $order = new Order;
         try {
             DB::transaction(function () use ($request, &$order) {
+                $address = $this->formatAddressFromRequest($request);
+                $shippingFee = $this->resolveShippingFee(
+                    (int) $request->input('district_id'),
+                    (string) $request->input('ward_code'),
+                    (float) $request->input('shipping_fee', 0)
+                );
+                $itemsTotal = (float) $request->input('total_price', 0);
+                $orderTotal = $itemsTotal + $shippingFee;
                 $payment_method = $request->payment_method ?? 'cod';
                 
                 $order = Order::create([
@@ -52,11 +58,12 @@ class CheckoutController extends Controller
                     'name'              => $request->name,
                     'phone'             => $request->phone,
                     'email'             => $request->email,
-                    'address'           => $request->address,
+                    'address'           => $address,
                     'status'            => 'Chờ duyệt',
                     'payment_method'    => $payment_method,
                     'payment_status'    => 'Chưa thanh toán',
-                    'total_price'       => $request->total_price,
+                    'total_price'       => $orderTotal,
+                    'shipping_fee'      => $shippingFee,
                     'expired_at'        => Carbon::now()->addMinutes(15) 
                 ]);
                 if ($request->has('cart_id')) {
@@ -236,87 +243,211 @@ class CheckoutController extends Controller
      */
     public function shippingFee(Request $request)
     {
+        return response()->json([
+            'configured' => false,
+            'fee' => 0,
+            'message' => 'Vui long su dung tinh phi ship GHN.',
+        ], 200);
+    }
+    public function getProvinces()
+    {
+        return $this->proxyGhnList('/master-data/province');
+    }
+
+    public function getDistricts($provinceCode)
+    {
+        return $this->proxyGhnList('/master-data/district', [
+            'province_id' => $provinceCode,
+        ]);
+    }
+
+    public function getWards($provinceCode, $districtCode)
+    {
+        return $this->proxyGhnList('/master-data/ward', [
+            'district_id' => $districtCode,
+        ]);
+    }
+
+    public function calculateShippingByLocation(Request $request)
+    {
         $request->validate([
-            'address' => 'required|string',
+            'district_id' => 'required|numeric',
+            'ward_code' => 'required|string',
+            'street_address' => 'required|string',
         ]);
 
-        $shopAddress = '234 Hoang Quoc Viet, Hanoi, Vietnam';
-        $dest = $request->input('address');
+        return response()->json(
+            $this->requestGhnFee(
+                (int) $request->input('district_id'),
+                (string) $request->input('ward_code')
+            )
+        );
+    }
 
-        $apiKey = config('services.google_maps.key');
-        if (empty($apiKey)) {
-            return response()->json([
-                'configured' => false,
-                'fee' => 0,
-                'message' => 'Google Maps API key chưa được cấu hình. Phí ship tạm thời để 0 đ.',
-            ]);
+    private function formatAddressFromRequest(Request $request)
+    {
+        $parts = array_filter([
+            $request->input('street_address'),
+            $request->input('ward_name'),
+            $request->input('district_name'),
+            $request->input('province_name'),
+        ]);
+
+        return implode(', ', $parts);
+    }
+
+    private function resolveShippingFee($districtId, $wardCode, $fallbackFee)
+    {
+        $response = $this->requestGhnFee($districtId, $wardCode);
+        if (!empty($response['configured']) && isset($response['fee'])) {
+            return (float) $response['fee'];
         }
 
-        $params = [
-            'origins' => $shopAddress,
-            'destinations' => $dest,
-            'key' => $apiKey,
-            'units' => 'metric',
-            'mode' => 'driving',
-            'language' => 'vi',
-            'region' => 'vn',
+        return (float) $fallbackFee;
+    }
+
+    private function requestGhnFee($toDistrictId, $toWardCode)
+    {
+        $token = config('services.ghn.token');
+        $shopId = config('services.ghn.shop_id');
+        $baseUrl = rtrim((string) config('services.ghn.base_url'), '/');
+
+        if (empty($token) || empty($shopId) || empty($baseUrl)) {
+            return [
+                'configured' => false,
+                'fee' => 0,
+                'message' => 'Chua cau hinh GHN sandbox. Vui long cap nhat .env.',
+            ];
+        }
+
+        $payload = [
+            'from_district_id' => (int) config('services.ghn.from_district_id'),
+            'from_ward_code' => (string) config('services.ghn.from_ward_code'),
+            'service_type_id' => (int) config('services.ghn.service_type_id'),
+            'to_district_id' => (int) $toDistrictId,
+            'to_ward_code' => (string) $toWardCode,
+            'weight' => (int) config('services.ghn.weight'),
+            'height' => (int) config('services.ghn.height'),
+            'length' => (int) config('services.ghn.length'),
+            'width' => (int) config('services.ghn.width'),
+            'insurance_value' => (int) config('services.ghn.insurance_value'),
+            'coupon' => null,
         ];
 
-        $url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
-
         try {
-            $response = Http::get($url, $params);
+            $response = Http::withOptions([
+                'verify' => (bool) config('services.ghn.verify_ssl', true),
+            ])->withHeaders([
+                'Token' => $token,
+                'ShopId' => $shopId,
+            ])->post($baseUrl . '/v2/shipping-order/fee', $payload);
+
             if (!$response->ok()) {
-                return response()->json([
+                $payload = [
                     'configured' => true,
                     'fee' => 0,
-                    'message' => 'Không lấy được dữ liệu khoảng cách từ Google Maps.',
-                    'google_status' => 'HTTP_' . $response->status(),
-                ], 200);
+                    'message' => 'Khong lay duoc phi ship tu GHN.',
+                    'ghn_status' => 'HTTP_' . $response->status(),
+                ];
+
+                if (config('app.debug')) {
+                    $payload['ghn_body'] = $response->json();
+                }
+
+                return $payload;
             }
 
             $data = $response->json();
-            $googleStatus = $data['status'] ?? 'UNKNOWN';
-            if (!isset($data['rows'][0]['elements'][0]) || $data['rows'][0]['elements'][0]['status'] !== 'OK') {
-                $elementStatus = $data['rows'][0]['elements'][0]['status'] ?? 'UNKNOWN';
-                return response()->json([
+            if (($data['code'] ?? 0) !== 200) {
+                $payload = [
                     'configured' => true,
                     'fee' => 0,
-                    'message' => 'Không xác định được khoảng cách cho địa chỉ đã nhập.',
-                    'google_status' => $googleStatus,
-                    'element_status' => $elementStatus,
-                    'google_error_message' => $data['error_message'] ?? null,
-                ], 200);
+                    'message' => $data['message'] ?? 'GHN tra ve loi.',
+                ];
+
+                if (config('app.debug')) {
+                    $payload['ghn_body'] = $data;
+                }
+
+                return $payload;
             }
 
-            $element = $data['rows'][0]['elements'][0];
-            $distanceMeters = $element['distance']['value'];
-            $distanceText = $element['distance']['text'];
-
-            // Shipping fee calculation example:
-            // base 15,000 VND for up to 5 km, then +3,000 VND per km thereafter (rounded up)
-            $km = $distanceMeters / 1000;
-            $baseKm = 5;
-            $baseFee = 15000;
-            $perKmFee = 3000;
-
-            $extraKm = max(0, ceil(max(0, $km - $baseKm)));
-            $fee = $baseFee + ($extraKm * $perKmFee);
-
-            return response()->json([
+            return [
                 'configured' => true,
-                'distance_text' => $distanceText,
-                'distance_meters' => $distanceMeters,
-                'fee' => $fee,
-                'google_status' => $googleStatus,
-            ]);
+                'fee' => $data['data']['total'] ?? 0,
+                'message' => 'Phi van chuyen da duoc tinh toan.',
+            ];
         } catch (\Throwable $e) {
-            return response()->json([
+            return [
                 'configured' => true,
                 'fee' => 0,
-                'message' => 'Không thể tính phí ship lúc này.',
+                'message' => 'Khong the tinh phi ship luc nay.',
                 'exception' => class_basename($e),
-            ], 200);
+            ];
+        }
+    }
+
+    private function proxyGhnList($path, array $query = [])
+    {
+        $token = config('services.ghn.token');
+        $baseUrl = rtrim((string) config('services.ghn.base_url'), '/');
+
+        if (empty($token) || empty($baseUrl)) {
+            if (config('app.debug')) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'GHN token/base url chua cau hinh.',
+                ], 500);
+            }
+
+            return response()->json([]);
+        }
+
+        try {
+            $response = Http::withOptions([
+                'verify' => (bool) config('services.ghn.verify_ssl', true),
+            ])->withHeaders(['token' => $token])
+                ->get($baseUrl . $path, $query);
+
+            if (!$response->ok()) {
+                if (config('app.debug')) {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => 'GHN response not OK.',
+                        'status' => $response->status(),
+                        'body' => $response->json(),
+                    ], 500);
+                }
+
+                return response()->json([]);
+            }
+
+            $data = $response->json();
+            if (($data['code'] ?? 0) !== 200) {
+                if (config('app.debug')) {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => $data['message'] ?? 'GHN tra ve loi.',
+                        'code' => $data['code'] ?? null,
+                    ], 500);
+                }
+
+                return response()->json([]);
+            }
+
+            return response()->json($data['data'] ?? []);
+        } catch (\Throwable $e) {
+            if (config('app.debug')) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Khong the goi GHN.',
+                    'exception' => class_basename($e),
+                    'exception_message' => $e->getMessage(),
+                    'exception_message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return response()->json([]);
         }
     }
 }
