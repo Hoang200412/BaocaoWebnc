@@ -15,7 +15,7 @@ class CleanExpiredOrders extends Command
 
     public function handle(): void  
     {
-        $expiredOrders = Order::where('status', 'Chưa thanh toán')
+        $expiredOrders = Order::where('payment_status', Order::PAYMENT_STATUS_PENDING)
             ->where('created_at', '<', now()->subMinutes(15))
             ->get();
 

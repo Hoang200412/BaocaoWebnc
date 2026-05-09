@@ -22,6 +22,7 @@
 
     <!-- Main CSS-->
     <link href="{{asset('css/project_1/theme.css')}}" rel="stylesheet" media="all">
+    <link href="{{asset('css/project_1/admin-pages.css')}}" rel="stylesheet" media="all">
     @yield('css')
 
     <!-- Font Awesome 6 Free CDN -->

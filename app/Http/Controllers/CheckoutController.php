@@ -51,7 +51,7 @@ class CheckoutController extends Controller
                 );
                 $itemsTotal = (float) $request->input('total_price', 0);
                 $orderTotal = $itemsTotal + $shippingFee;
-                $payment_method = $request->payment_method ?? 'cod';
+                $payment_method = $request->payment_method ?? Order::PAYMENT_METHOD_COD;
                 
                 $order = Order::create([
                     'user_id'           => Auth::user()->id,
@@ -59,9 +59,9 @@ class CheckoutController extends Controller
                     'phone'             => $request->phone,
                     'email'             => $request->email,
                     'address'           => $address,
-                    'status'            => 'Chờ duyệt',
+                    'status'            => Order::STATUS_PENDING,
                     'payment_method'    => $payment_method,
-                    'payment_status'    => 'Chưa thanh toán',
+                    'payment_status'    => Order::PAYMENT_STATUS_PENDING,
                     'total_price'       => $orderTotal,
                     'shipping_fee'      => $shippingFee,
                     'expired_at'        => Carbon::now()->addMinutes(15) 
@@ -123,7 +123,7 @@ class CheckoutController extends Controller
             });
 
             // Nếu là thanh toán khi nhận hàng thì trả về trang thành công
-            if ($request->payment_method === 'cod') {
+            if ($request->payment_method === Order::PAYMENT_METHOD_COD) {
                 return view('project_1.customer.checkout.success', compact('order'));
             } else {
                 // Nếu là thanh toán qua VNPay thì chuyển hướng
@@ -168,6 +168,7 @@ class CheckoutController extends Controller
             "vnp_TxnRef"     => $vnp_TxnRef,
             "vnp_BankCode"   => 'NCB',
         ];
+        // dd($inputData);
 
         $vnp_BankCode = request()->input('bank_code'); // ví dụ: "NCB", "VNPAYQR", "VISA"
         if (!empty($vnp_BankCode)) {
@@ -194,6 +195,39 @@ class CheckoutController extends Controller
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
         }
         return redirect($vnp_Url);
+    }
+
+    public function repayVnpay(Order $order)
+    {
+        if ((int) $order->user_id !== (int) Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->payment_method !== Order::PAYMENT_METHOD_VNPAY) {
+            return redirect()
+                ->route('order.show', $order->id)
+                ->with('error', 'Phuong thuc thanh toan khong phu hop.');
+        }
+
+        if ($order->payment_status === Order::PAYMENT_STATUS_SUCCESS) {
+            return redirect()
+                ->route('order.show', $order->id)
+                ->with('success', 'Don hang da thanh toan thanh cong.');
+        }
+
+        if (!in_array($order->payment_status, [
+            Order::PAYMENT_STATUS_FAILED,
+            Order::PAYMENT_STATUS_PENDING,
+        ], true)) {
+            return redirect()
+                ->route('order.show', $order->id)
+                ->with('error', 'Chi co the thanh toan lai khi chua thanh toan hoac that bai.');
+        }
+
+        $order->expired_at = Carbon::now()->addMinutes(15);
+        $order->save();
+
+        return $this->vnpayShow($order);
     }
 
     public function vnpayReturn(Request $request)
@@ -224,14 +258,14 @@ class CheckoutController extends Controller
             // Thanh toán thành công
             $orderId = explode('-', $request->vnp_TxnRef)[0];
             $order = Order::find($orderId);
-            $order->payment_status = 'Thanh toán thành công';
+            $order->payment_status = Order::PAYMENT_STATUS_SUCCESS;
             $order->save();
 
             return view('project_1.customer.checkout.success',compact('order'));
         } else {
             $orderId = explode('-', $request->vnp_TxnRef)[0];
             $order = Order::find($orderId);
-            $order->payment_status = 'Thanh toán thất bại';
+            $order->payment_status = Order::PAYMENT_STATUS_FAILED;
             $order->save();
             return view('project_1.customer.checkout.error');
         }

@@ -1,0 +1,319 @@
+/* =========================================================
+   Admin Pages – Shared Styles (đồng bộ với Dashboard)
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+/* ---- CSS Variables ---- */
+.admin-page-shell {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    --ink: #102a43;
+    --muted: #627d98;
+    --bg-soft: #f4f7fb;
+    --card: #ffffff;
+    --primary: #0f766e;
+    --primary-light: #14b8a6;
+    --accent: #f59e0b;
+    --danger: #dc2626;
+    --info: #0ea5e9;
+
+    background: radial-gradient(1200px 500px at 100% -120px, #b9f1dd 0%, transparent 60%),
+        radial-gradient(900px 400px at -80px 80px, #d6e6ff 0%, transparent 60%),
+        var(--bg-soft);
+    border-radius: 18px;
+    padding: 24px;
+    min-height: calc(100vh - 120px);
+}
+
+/* ---- Page Header (hero nhỏ) ---- */
+.admin-page-header {
+    background: linear-gradient(120deg, #0f766e 0%, #0ea5e9 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px rgba(16, 42, 67, 0.16);
+}
+
+.admin-page-header h1,
+.admin-page-header h2,
+.admin-page-header h3 {
+    margin-bottom: 4px;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: #fff;
+}
+
+.admin-page-header p {
+    margin-bottom: 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+/* ---- Card ---- */
+.admin-card {
+    background: var(--card);
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(16, 42, 67, 0.08);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s ease;
+}
+
+.admin-card:hover {
+    box-shadow: 0 12px 32px rgba(16, 42, 67, 0.12);
+}
+
+/* ---- Alert enhancements ---- */
+.admin-page-shell .alert {
+    border-radius: 10px;
+    border: 0;
+    font-size: 0.92rem;
+}
+
+.admin-page-shell .alert-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.admin-page-shell .alert-danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+}
+
+/* ---- Tables ---- */
+.admin-card .table {
+    margin-bottom: 0;
+}
+
+.admin-card .table thead {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.admin-card .table thead th {
+    font-weight: 700;
+    color: var(--ink);
+    border-bottom: 2px solid #d1fae5;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.admin-card .table tbody td {
+    padding: 10px 16px;
+    vertical-align: middle;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+}
+
+.admin-card .table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.admin-card .table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.admin-card .table-bordered {
+    border: 1px solid #e2e8f0;
+}
+
+/* Dark table header override */
+.admin-card .table .table-dark th,
+.admin-card .table thead.table-dark th {
+    background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+    color: #fff;
+    border-bottom: 0;
+}
+
+/* ---- Forms ---- */
+.admin-card .form-label {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.admin-card .form-control,
+.admin-card .form-select {
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-card .form-control:focus,
+.admin-card .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+/* ---- Buttons ---- */
+.admin-card .btn-success {
+    background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+    border: 0;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 20px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-card .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+}
+
+.admin-card .btn-danger {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 20px;
+}
+
+.admin-card .btn-primary {
+    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+    border: 0;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 20px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-card .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+}
+
+.admin-card .btn-outline-secondary {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 20px;
+}
+
+/* ---- Action toolbar ---- */
+.admin-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+/* ---- Pagination ---- */
+.admin-card .pagination {
+    margin: 0;
+}
+
+.admin-card .page-link {
+    border-radius: 6px;
+    margin: 0 2px;
+    font-size: 0.88rem;
+    color: var(--primary);
+    border-color: #e2e8f0;
+}
+
+.admin-card .page-item.active .page-link {
+    background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+    border-color: transparent;
+}
+
+/* ---- Badges ---- */
+.admin-page-shell .badge {
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+/* ---- Filter card ---- */
+.admin-filter-card {
+    background: var(--card);
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(16, 42, 67, 0.06);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.admin-filter-card .form-label {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.85rem;
+}
+
+.admin-filter-card .form-control,
+.admin-filter-card .form-select {
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    font-size: 0.88rem;
+}
+
+.admin-filter-card .btn {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* ---- Images in tables ---- */
+.admin-card .table img {
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ---- Select2 overrides ---- */
+.admin-page-shell .select2-container--default .select2-selection--multiple {
+    min-height: 42px;
+    padding: 5px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.admin-page-shell .select2-container--default .select2-selection--multiple:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+/* ---- Ship/Shipping button ---- */
+.btn-ship {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    border: 0;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 5px 12px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-ship:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    color: #fff;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .admin-page-shell {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .admin-page-header {
+        padding: 14px 16px;
+    }
+
+    .admin-page-header h1,
+    .admin-page-header h2,
+    .admin-page-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .admin-card {
+        padding: 14px;
+    }
+}

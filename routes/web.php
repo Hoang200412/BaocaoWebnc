@@ -50,6 +50,9 @@ Route::prefix('home')->group(function() {
         Route::get('vnpay/return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
         Route::get('order', [OrderController::class, 'index'])->name('order');
+        Route::get('order/{id}', [OrderController::class, 'show'])->name('order.show');
+        Route::post('order/{order}/repay', [CheckoutController::class, 'repayVnpay'])->name('order.repay');
+        Route::post('order/{id}/cancel', [OrderController::class, 'cancel'])->name('order.cancel');
         
         // Show cart cho user
         Route::get('/show-CartProducts', [ProductCartController::class, 'index'])->name('showCart');
@@ -132,6 +135,7 @@ Route::middleware(['auth',isAdmin::class])->prefix('admin')->group(function () {
     Route::get('orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::post('orders/{id}/approve', [AdminOrderController::class, 'approve'])->name('orders.approve');
     Route::get('orders/{id}/print', [AdminOrderController::class, 'print'])->name('orders.print');
+    Route::post('orders/{id}/ship', [AdminOrderController::class, 'ship'])->name('orders.ship');
 
     
 });

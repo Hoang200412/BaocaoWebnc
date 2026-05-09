@@ -16,16 +16,19 @@
             <div class="mb-4">
                 <ul class="nav nav-tabs" id="orderStatusTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" data-status="Chờ duyệt" type="button">Chờ duyệt</button>
+                        <button class="nav-link active" data-status="{{ \App\Models\Order::STATUS_PENDING }}" type="button">Chờ duyệt</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-status="Đã duyệt" type="button">Đã duyệt</button>
+                        <button class="nav-link" data-status="{{ \App\Models\Order::STATUS_APPROVED }}" type="button">Đã duyệt</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-status="Chờ giao hàng" type="button">Chờ giao hàng</button>
+                        <button class="nav-link" data-status="{{ \App\Models\Order::STATUS_SHIPPING }}" type="button">Chờ giao hàng</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-status="Đã nhận hàng" type="button">Đã nhận hàng</button>
+                        <button class="nav-link" data-status="{{ \App\Models\Order::STATUS_DELIVERED }}" type="button">Đã nhận hàng</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-status="{{ \App\Models\Order::STATUS_CANCELED }}" type="button">Đã hủy</button>
                     </li>
                     <li class="nav-item ms-auto" role="presentation">
                         <button class="nav-link" data-status="all" type="button">Tất cả</button>
@@ -70,19 +73,36 @@
                                     <div class="price">
                                         <span class="text-danger">Giá: {{number_format($item->price)}}đ</span>
                                     </div>
+                                    <div class="text-muted">Phí ship: {{ number_format($order->shipping_fee ?? 0) }} đ</div>
                                 </div>
-                            </div>
+                        </div>  
                         @endforeach
                         
 
                         <div class="p-3">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                                <div class="text-muted">
+                                    Phương thức thanh toán: {{ \App\Models\Order::PAYMENT_METHOD_LABELS[$order->payment_method] ?? $order->payment_method }}
+                                </div>
+                            </div>
                             <div class="text-end">
                                 <span class="fs-5 fw-medium">Thành tiền: </span>
                                 <span class="fs-5 fw-medium text-danger">{{number_format($order->total_price)}} đ</span>
                             </div>
                             <div class="text-end my-3">
-                                <a href="#" class="btn btn-danger">Mua lại</a>
-                                <a href="" class="btn border">Liên hệ người bán</a>
+                                <a href="{{ route('order.show', $order->id) }}" class="btn btn-outline-dark">Xem chi tiết</a>
+                                @if ($order->payment_method === \App\Models\Order::PAYMENT_METHOD_VNPAY && in_array($order->payment_status, [\App\Models\Order::PAYMENT_STATUS_PENDING, \App\Models\Order::PAYMENT_STATUS_FAILED], true) && $order->status !== \App\Models\Order::STATUS_CANCELED)
+                                    <form action="{{ route('order.repay', $order->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger">Thanh toán</button>
+                                    </form>
+                                @endif
+                                @if ($order->payment_status === \App\Models\Order::PAYMENT_STATUS_FAILED || $order->payment_status === \App\Models\Order::PAYMENT_STATUS_PENDING && $order->status !== \App\Models\Order::STATUS_CANCELED)
+                                    <form action="{{ route('order.cancel', $order->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-danger">Hủy đơn</button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
 

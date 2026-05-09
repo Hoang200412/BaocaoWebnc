@@ -1,34 +1,39 @@
 @extends('project_1.admin.layouts.layout')
 
 @section('content')
-    <div class="main-content">
-        <div class="m-3 bg-white py-3">
+<div class="main-content">
+    <div class="admin-page-shell m-3">
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-4 " role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mx-4 " role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+        <div class="admin-page-header">
+            <h3><i class="fas fa-sliders me-2"></i>Quản lý Banner</h3>
+            <p>Quản lý hình ảnh banner hiển thị trên trang chủ.</p>
+        </div>
 
-            <div class="mx-3 p-2">
-                <form action="{{route('banners.store')}}" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <label for="image">Banner</label>
-                    <input type="file" name="image" class="form-control mb-3">
-                    <input type="submit" value="Thêm banner" class="btn btn-success mt-3">
-                </form>
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-            <div class="my-3 border-top p-3">
-                
-                <table  class="table table-striped table-hover ">
+        <div class="admin-card">
+            <form action="{{route('banners.store')}}" method="post" enctype="multipart/form-data">
+                @csrf
+                <label for="image" class="form-label">Thêm banner mới</label>
+                <input type="file" name="image" class="form-control mb-3">
+                <input type="submit" value="Thêm banner" class="btn btn-success">
+            </form>
+        </div>
+
+        <div class="admin-card">
+            <div class="table-responsive">
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -41,8 +46,7 @@
                             <tr>
                                 <td>{{$key}}</td>
                                 <td class="text-center">
-                                    <img src="{{ asset('storage/' . $banner->image_path) }}" alt="" srcset="" style="width: 200px">
-    
+                                    <img src="{{ asset('storage/' . $banner->image_path) }}" alt="" style="width: 200px">
                                 </td>
                                 <td>
                                     <form action="{{route('banners.destroy', $banner)}}" method="post" class="d-inline" onclick="return confirm('Bạn chắc muốn xóa chứ?')">
@@ -58,7 +62,8 @@
                     </tbody>
                 </table>
             </div>
-            
         </div>
+
     </div>
+</div>
 @endsection

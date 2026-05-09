@@ -1,36 +1,41 @@
 @extends('project_1.admin.layouts.layout')
 
 @section('content')
-    <div class="main-content">
+<div class="main-content">
+    <div class="admin-page-shell m-3">
 
-        <div class="m-3 bg-white py-3">
+        <div class="admin-page-header">
+            <h3><i class="fas fa-edit me-2"></i>Chỉnh sửa thẻ</h3>
+            <p>Cập nhật thông tin thẻ sản phẩm.</p>
+        </div>
 
-            @if ($errors->any())
-            <div class="alert alert-danger mx-4">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            @endif
+        @endif
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-4" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            <form action="{{route('tags.update', $tag->id)}}" method="POST" class="p-3">
+        <div class="admin-card">
+            <form action="{{route('tags.update', $tag->id)}}" method="POST">
                 @csrf
                 @method('PUT')
-                <label for="name" class=" m-2">Tên thẻ</label>
-                <input type="text" class="form-control m-2" name="name" value="{{$tag->name}}">
-                <input type="submit" class="btn btn-success m-2" value="Sửa">
+                <label for="name" class="form-label">Tên thẻ</label>
+                <input type="text" class="form-control mb-3" name="name" value="{{$tag->name}}">
+                <input type="submit" class="btn btn-success" value="Cập nhật">
             </form>
-            
         </div>
-        
-    </div>    
+
+    </div>
+</div>
 @endsection

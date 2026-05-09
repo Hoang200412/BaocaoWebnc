@@ -1,23 +1,30 @@
 @extends('project_1.admin.layouts.layout')
 
 @section('content')
-    <div class="main-content">
-        <div class="m-3 bg-white py-3">
+<div class="main-content">
+    <div class="admin-page-shell m-3">
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-4 " role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+        <div class="admin-page-header">
+            <h3><i class="fas fa-tags me-2"></i>Quản lý thẻ</h3>
+            <p>Thêm, chỉnh sửa và quản lý các thẻ sản phẩm.</p>
+        </div>
 
-            <div class="mx-3 p-2">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <div class="admin-card">
+            <div class="admin-toolbar">
                 <a href="{{route('tags.create')}}" class="btn-icon btn-add" data-bs-toggle="tooltip" data-bs-title="Thêm thẻ mới">
                    <i class="fas fa-plus"></i>
                 </a>
             </div>
-            <div class="px-4">
-                <table class="table table-striped table-hover ">
+
+            <div class="table-responsive">
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th scope="col" class="text-center">#</th>
@@ -28,9 +35,9 @@
                     <tbody>
                         @foreach ($tags as $key => $tag)
                             <tr>
-                                <td scope="row" class="text-center">{{$key}}</th>
-                                <td scope="row">{{$tag->name}}</td>
-                                <td scope="row" class="d-flex justify-content-end">
+                                <td class="text-center">{{$key}}</td>
+                                <td>{{$tag->name}}</td>
+                                <td class="d-flex justify-content-end">
                                     <a class="btn-icon btn-view" href="{{route('tags.edit', $tag->id)}}" data-bs-toggle="tooltip" data-bs-title="Chỉnh sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -42,19 +49,17 @@
                                         </button>
                                     </form>
                                 </td>
-                                </td>
-                        
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                
-                <div class="my-5 border-top p-3">
-                    {{$tags->links()}}
-                </div>
             </div>
-            
 
+            <div class="mt-3 border-top pt-3">
+                {{$tags->links()}}
+            </div>
         </div>
+
     </div>
+</div>
 @endsection

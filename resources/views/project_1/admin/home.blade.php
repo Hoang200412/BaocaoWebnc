@@ -1,414 +1,582 @@
 @extends('project_1.admin.layouts.layout')
+
 @section('css')
- <link rel="stylesheet" href="{{asset('css/project_1/chart.css')}}">
- <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 
-    .dashboard-wrap {
-        font-family: 'Outfit', sans-serif;
+    .dashboard-v3 {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        --ink: #102a43;
+        --muted: #627d98;
+        --bg-soft: #f4f7fb;
+        --card: #ffffff;
+        --primary: #0f766e;
+        --accent: #f59e0b;
+        --danger: #dc2626;
     }
 
-    .kpi-card {
-        background: linear-gradient(135deg, #1f8a70 0%, #2bb3a2 100%);
-        border-radius: 10px;
+    .dashboard-shell {
+        background: radial-gradient(1200px 500px at 100% -120px, #b9f1dd 0%, transparent 60%),
+            radial-gradient(900px 400px at -80px 80px, #d6e6ff 0%, transparent 60%),
+            var(--bg-soft);
+        border-radius: 18px;
+        padding: 24px;
+    }
+
+    .hero {
+        background: linear-gradient(120deg, #0f766e 0%, #0ea5e9 100%);
+        color: #fff;
+        border-radius: 16px;
         padding: 20px;
-        color: white;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(16, 42, 67, 0.16);
     }
-    
-    .kpi-card:hover {
-        transform: translateY(-5px);
+
+    .hero h3 {
+        margin-bottom: 6px;
+        font-weight: 800;
     }
-    
-    .kpi-card.revenue {
-        background: linear-gradient(135deg, #1f8a70 0%, #2bb3a2 100%);
-    }
-    
-    .kpi-card.orders {
-        background: linear-gradient(135deg, #ff8f2a 0%, #ff6b35 100%);
-    }
-    
-    .kpi-card.customers {
-        background: linear-gradient(135deg, #2185d0 0%, #4fb0ff 100%);
-    }
-    
-    .kpi-card.products {
-        background: linear-gradient(135deg, #23a26d 0%, #6bd58f 100%);
-    }
-    
-    .kpi-card.avg-value {
-        background: linear-gradient(135deg, #e7a528 0%, #f2c94c 100%);
-    }
-    
-    .kpi-value {
-        font-size: 2rem;
-        font-weight: bold;
-        margin: 10px 0;
-    }
-    
-    .kpi-label {
-        font-size: 0.9rem;
+
+    .hero p {
+        margin-bottom: 0;
         opacity: 0.9;
     }
-    
-    .kpi-icon {
-        font-size: 2.5rem;
-        opacity: 0.3;
-        float: right;
-    }
-    
-    .status-chart {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    
-    .status-badge {
-        flex: 1;
-        min-width: 150px;
-        padding: 15px;
-        border-radius: 8px;
-        text-align: center;
-        color: white;
-        font-weight: bold;
-    }
-    
-    .status-completed {
-        background-color: #28a745;
-    }
-    
-    .status-pending {
-        background-color: #ffc107;
-        color: #333;
-    }
-    
-    .status-approved {
-        background-color: #17a2b8;
-    }
-    
-    .status-failed {
-        background-color: #dc3545;
-    }
-    
-    .top-customers-table {
-        max-height: 400px;
-        overflow-y: auto;
-    }
-    
-    .product-row {
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    
-    .product-row:hover {
-        background-color: #f8f9fa;
-    }
 
-    .revenue-7-card {
+    .filter-card,
+    .stat-card,
+    .chart-card,
+    .table-card,
+    .stock-card {
+        background: var(--card);
         border: 0;
-        box-shadow: 0 8px 24px rgba(20, 30, 40, 0.08);
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(16, 42, 67, 0.08);
     }
 
-    .revenue-7-card .card-header {
-        background: linear-gradient(135deg, #0f766e 0%, #16a085 100%);
+    .filter-card {
+        padding: 14px;
+    }
+
+    .stat-card {
         color: #fff;
-        border-bottom: 0;
-        font-weight: 600;
-    }
-
-    .revenue-rows {
-        display: grid;
-        gap: 12px;
-    }
-
-    .revenue-row {
-        display: grid;
-        grid-template-columns: 84px 1fr auto auto;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
-        border-radius: 10px;
-        background: #f6f8fb;
-    }
-
-    .rev-date {
-        font-weight: 600;
-        color: #0f172a;
-        font-size: 0.85rem;
-    }
-
-    .rev-bar {
-        height: 10px;
-        background: #e1e7ef;
-        border-radius: 999px;
+        position: relative;
         overflow: hidden;
+        min-height: 128px;
+        padding: 16px;
+        transition: transform 0.2s ease;
     }
 
-    .rev-bar span {
-        display: block;
-        height: 100%;
-        background: linear-gradient(90deg, #ff7a45 0%, #ffb347 100%);
-        border-radius: 999px;
+    .stat-card:hover {
+        transform: translateY(-3px);
     }
 
-    .rev-value {
-        font-weight: 700;
-        color: #0f172a;
-        font-size: 0.9rem;
-        white-space: nowrap;
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        right: -20px;
+        top: -20px;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.22);
     }
 
-    .rev-orders {
+    .stat-title {
+        font-size: 0.86rem;
+        opacity: 0.95;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .stat-note {
         font-size: 0.8rem;
-        color: #64748b;
-        white-space: nowrap;
+        margin-top: 8px;
+        opacity: 0.9;
     }
 
-    .chart-card {
-        border: 0;
-        box-shadow: 0 8px 24px rgba(20, 30, 40, 0.08);
+    .stat-1 { background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); }
+    .stat-2 { background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%); }
+    .stat-3 { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); }
+    .stat-4 { background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); }
+    .stat-5 { background: linear-gradient(135deg, #be123c 0%, #f43f5e 100%); }
+    .stat-6 { background: linear-gradient(135deg, #15803d 0%, #22c55e 100%); }
+    .stat-7 { background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%); }
+
+    .chart-card .card-header,
+    .table-card .card-header,
+    .stock-card .card-header {
+        background: transparent;
+        border-bottom: 1px solid #e5e7eb;
+        font-weight: 700;
+        color: var(--ink);
+        padding: 14px 16px;
     }
 
-    .chart-card .card-header {
-        background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
-        color: #fff;
-        border-bottom: 0;
+    .chart-card .card-body,
+    .table-card .card-body,
+    .stock-card .card-body {
+        padding: 14px 16px;
+    }
+
+    .chart-h {
+        position: relative;
+        height: 320px;
+        min-height: 0;
+    }
+
+    .chart-h canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+    }
+
+    .stock-item {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .stock-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .stock-name {
         font-weight: 600;
+        color: var(--ink);
     }
 
-    .chart-wrap {
-        min-height: 240px;
+    .stock-qty {
+        font-weight: 700;
+        color: var(--danger);
     }
 
-    @media (max-width: 576px) {
-        .revenue-row {
-            grid-template-columns: 1fr;
-            align-items: start;
+    @media (max-width: 768px) {
+        .dashboard-shell {
+            padding: 14px;
+        }
+
+        .hero {
+            padding: 14px;
+        }
+
+        .stat-value {
+            font-size: 1.35rem;
+        }
+
+        .chart-h {
+            height: 240px;
         }
     }
- </style>
+</style>
 @endsection
+
 @section('content')
-    
+<div class="main-content">
+    <div class="dashboard-v3 p-3">
+    <div class="dashboard-shell">
+        <div class="hero mb-3">
+            <h3>Dashboard Tổng Quan</h3>
+            <p>Theo dõi nhanh doanh thu, đơn hàng, khách hàng và hiệu suất bán sách.</p>
+        </div>
 
-    <div class="container mt-4 dashboard-wrap">
-        <h4 class="mr-2 font-weight-bold mb-4">
-            <i class="fas fa-chart-bar"></i> Thống kê Bán Hàng 
-
-        </h4>
-
-        <form action="{{ route('statistics.filter') }}" method="GET" class="form-inline mb-4">
-            <div class="form-row align-items-center">
-                <div class="col-auto">
-                <label for="from" class="">Từ ngày:</label>
-
-                <input type="date" name="from" id="from" class="form-control mb-2"style="width:30% " required value="{{ request('from') }}">
+        <div class="filter-card mb-3">
+            <form action="{{ route('statistics.filter') }}" method="GET" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label mb-1">Từ ngày</label>
+                    <input type="date" name="from" class="form-control" value="{{ request('from', isset($from) ? $from->toDateString() : '') }}">
                 </div>
-                <div class="col-auto">
-                <label for="to" class="mr-2 font-weight-bold">Đến ngày:</label>
-                <input type="date" name="to" id="to" class="form-control mb-2" style="width:30% " required value="{{ request('to') }}">
+                <div class="col-md-3">
+                    <label class="form-label mb-1">Đến ngày</label>
+                    <input type="date" name="to" class="form-control" value="{{ request('to', isset($to) ? $to->toDateString() : '') }}">
                 </div>
-                <div class="col-auto">
-                <button type="submit" class="btn btn-primary mb-2"><i class="fas fa-search"></i> Tìm kiếm</button>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">Lọc dữ liệu</button>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <a href="{{ route('admin') }}" class="btn btn-outline-secondary">Mặc định</a>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <a href="{{ route('statistics.export', ['from' => request('from'), 'to' => request('to')]) }}" class="btn btn-outline-success">Xuất Excel</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-card stat-1">
+                    <div class="stat-title">Tổng số sách</div>
+                    <div class="stat-value">{{ number_format($overview['total_books']) }}</div>
+                    <div class="stat-note">Sản phẩm đang quản lý</div>
                 </div>
             </div>
-        </form>
-
-        <!-- KPI Cards -->
-        <div class="row mb-4">
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="kpi-card revenue">
-                    <div class="kpi-icon"><i class="fas fa-dollar-sign"></i></div>
-                    <div class="kpi-label">Tổng Doanh Thu</div>
-                    <div class="kpi-value">{{ number_format($kpis['total_revenue'], 0, ',', '.') }}đ</div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-card stat-2">
+                    <div class="stat-title">Tổng đơn hàng</div>
+                    <div class="stat-value">{{ number_format($overview['total_orders']) }}</div>
+                    <div class="stat-note">Toàn bộ đơn trên hệ thống</div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="kpi-card orders">
-                    <div class="kpi-icon"><i class="fas fa-shopping-bag"></i></div>
-                    <div class="kpi-label">Tổng Đơn Hàng</div>
-                    <div class="kpi-value">{{ $kpis['total_orders'] }}</div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-card stat-3">
+                    <div class="stat-title">Tổng khách hàng</div>
+                    <div class="stat-value">{{ number_format($overview['total_customers']) }}</div>
+                    <div class="stat-note">Tài khoản thành viên</div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="kpi-card customers">
-                    <div class="kpi-icon"><i class="fas fa-users"></i></div>
-                    <div class="kpi-label">Tổng Khách Hàng</div>
-                    <div class="kpi-value">{{ $kpis['total_customers'] }}</div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-card stat-4">
+                    <div class="stat-title">Tổng doanh thu</div>
+                    <div class="stat-value">{{ number_format($overview['total_revenue'], 0, ',', '.') }} đ</div>
+                    <div class="stat-note">Đơn đã thanh toán thành công</div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="kpi-card products">
-                    <div class="kpi-icon"><i class="fas fa-box"></i></div>
-                    <div class="kpi-label">Sản Phẩm Bán Ra</div>
-                    <div class="kpi-value">{{ $kpis['total_products_sold'] }}</div>
+            <div class="col-sm-6 col-lg-4">
+                <div class="stat-card stat-5">
+                    <div class="stat-title">Doanh thu hôm nay</div>
+                    <div class="stat-value">{{ number_format($overview['today_revenue'], 0, ',', '.') }} đ</div>
+                    <div class="stat-note">Tính từ 00:00 đến hiện tại</div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="kpi-card avg-value">
-                    <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
-                    <div class="kpi-label">Giá Trung Bình</div>
-                    <div class="kpi-value">{{ number_format($kpis['avg_order_value'], 0, ',', '.') }}đ</div>
+            <div class="col-sm-6 col-lg-4">
+                <div class="stat-card stat-6">
+                    <div class="stat-title">Đơn hàng hôm nay</div>
+                    <div class="stat-value">{{ number_format($overview['today_orders']) }}</div>
+                    <div class="stat-note">Số đơn phát sinh trong ngày</div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-4">
+                <div class="stat-card stat-7">
+                    <div class="stat-title">Sách sắp hết hàng</div>
+                    <div class="stat-value">{{ number_format($lowStockBooks->count()) }}</div>
+                    <div class="stat-note">Có số lượng <= 10</div>
                 </div>
             </div>
         </div>
 
-        <!-- Order Status Stats -->
-        <div class="card mb-4">
-            <div class="card-header bg-dark text-white">
-                <i class="fas fa-chart-pie"></i> Trạng Thái Đơn Hàng
-            </div>
-            <div class="card-body">
-                <div class="status-chart">
-                    <div class="status-badge status-completed">
-                        <div style="font-size: 1.5rem;">{{ $orderStats['completed'] }}</div>
-                        <div>Đã Thanh Toán</div>
-                    </div>
-                    <div class="status-badge status-pending">
-                        <div style="font-size: 1.5rem;">{{ $orderStats['pending'] }}</div>
-                        <div>Chưa Thanh Toán</div>
-                    </div>
-                    <div class="status-badge status-approved">
-                        <div style="font-size: 1.5rem;">{{ $orderStats['approved'] }}</div>
-                        <div>Đã Duyệt</div>
-                    </div>
-                    <div class="status-badge status-failed">
-                        <div style="font-size: 1.5rem;">{{ $orderStats['failed'] }}</div>
-                        <div>Thất Bại</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @php
-            $maxRevenue = collect($dailyStats)->max('total_revenue') ?: 1;
-        @endphp
-
-        <div class="row mb-4">
-            <div class="col-lg-5 mb-3">
-                <div class="card revenue-7-card">
-                    <div class="card-header">
-                        📅 Doanh thu 7 ngày gần nhất
-                    </div>
-                    <div class="card-body">
-                        <div class="revenue-rows">
-                            @foreach($dailyStats as $row)
-                                @php
-                                    $pct = (int) round((($row['total_revenue'] ?? 0) / $maxRevenue) * 100);
-                                @endphp
-                                <div class="revenue-row">
-                                    <div class="rev-date">{{ \Carbon\Carbon::parse($row['date'])->format('d/m') }}</div>
-                                    <div class="rev-bar"><span style="width: {{ $pct }}%"></span></div>
-                                    <div class="rev-value">{{ number_format($row['total_revenue'] ?? 0, 0, ',', '.') }}đ</div>
-                                    <div class="rev-orders">{{ $row['total_orders'] }} đơn</div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-7 mb-3">
-                <div class="card chart-card">
-                    <div class="card-header">Xu hướng doanh thu</div>
-                    <div class="card-body">
-                        <div class="chart-wrap">
-                            <canvas id="revenueChart" height="140"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <!-- Top 5 Products -->
+        <div class="row g-3 mb-3">
             <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <i class="fas fa-star"></i> Top 5 Sản Phẩm Bán Chạy
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Tên Sản Phẩm</th>
-                                    <th>Số Lượng Bán</th>
-                                    <th>Doanh Thu (VNĐ)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($topProducts as $index => $product)
-                                    <tr class="product-row">
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $product->product_name }}</td>
-                                        <td><span class="badge bg-primary">{{ $product->total_quantity }}</span></td>
-                                        <td>{{ number_format($product->total_revenue, 0, ',', '.') }}đ</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                <div class="card chart-card">
+                    <div class="card-header">Doanh thu theo ngày (khoảng lọc hiện tại)</div>
+                    <div class="card-body chart-h">
+                        <canvas id="revenueDayChart"></canvas>
                     </div>
                 </div>
             </div>
-
-            <!-- Top Customers -->
             <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header bg-warning text-dark">
-                        <i class="fas fa-crown"></i> Top Khách Hàng
-                    </div>
-                    <div class="card-body top-customers-table">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Tên KH</th>
-                                    <th>Đơn Hàng</th>
-                                    <th>Chi Tiêu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($topCustomers as $customer)
-                                    <tr>
-                                        <td>
-                                            <small><strong>{{ substr($customer->name, 0, 10) }}</strong></small>
-                                        </td>
-                                        <td><span class="badge bg-info">{{ $customer->total_orders }}</span></td>
-                                        <td><small>{{ number_format($customer->total_spent, 0, ',', '.') }}</small></td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted">Chưa có dữ liệu</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                <div class="card chart-card h-100">
+                    <div class="card-header">Biểu đồ trạng thái đơn hàng</div>
+                    <div class="card-body chart-h">
+                        <canvas id="orderStatusChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <form action="{{ route('statistics.export') }}" method="GET" class="mb-3 mt-4">
-            <input type="hidden" name="from" value="{{ request('from') }}">
-            <input type="hidden" name="to" value="{{ request('to') }}">
-            <button type="submit" class="btn btn-success" style=" margin-top:10px"><i class="fas fa-file-excel text-success"></i> Xuất Excel</button>
-        </form>
+        <div class="row g-3 mb-3">
+            <div class="col-lg-6">
+                <div class="card chart-card">
+                    <div class="card-header">Doanh thu theo tháng (12 tháng gần nhất)</div>
+                    <div class="card-body chart-h">
+                        <canvas id="revenueMonthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card chart-card">
+                    <div class="card-header">Doanh thu theo năm (5 năm)</div>
+                    <div class="card-body chart-h">
+                        <canvas id="revenueYearChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-lg-6">
+                <div class="card table-card">
+                    <div class="card-header">Top sách bán chạy</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Sách</th>
+                                        <th class="text-end">SL bán</th>
+                                        <th class="text-end">Doanh thu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($topProducts as $product)
+                                        <tr>
+                                            <td>{{ $product->product_name }}</td>
+                                            <td class="text-end">{{ number_format($product->total_quantity) }}</td>
+                                            <td class="text-end">{{ number_format($product->total_revenue, 0, ',', '.') }} đ</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">Chưa có dữ liệu</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card table-card">
+                    <div class="card-header">Top danh mục bán chạy</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Danh mục</th>
+                                        <th class="text-end">SL bán</th>
+                                        <th class="text-end">Doanh thu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($topCategories as $category)
+                                        <tr>
+                                            <td>{{ $category->name }}</td>
+                                            <td class="text-end">{{ number_format($category->total_quantity) }}</td>
+                                            <td class="text-end">{{ number_format($category->total_revenue, 0, ',', '.') }} đ</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">Chưa có dữ liệu</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <div class="card chart-card">
+                    <div class="card-header">Tăng trưởng khách hàng (12 tháng)</div>
+                    <div class="card-body chart-h">
+                        <canvas id="customerGrowthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card stock-card h-100">
+                    <div class="card-header">Sách sắp hết hàng</div>
+                    <div class="card-body">
+                        @forelse($lowStockBooks as $book)
+                            <div class="stock-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stock-name">{{ $book->name }}</div>
+                                    <small class="text-muted">{{ number_format($book->price, 0, ',', '.') }} đ</small>
+                                </div>
+                                <div class="stock-qty">{{ $book->quantity }}</div>
+                            </div>
+                        @empty
+                            <div class="text-muted">Hiện không có sách sắp hết hàng.</div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-
+</div>
+</div>
 
 @endsection
-@@
+
 @section('js')
 @parent
-<!-- Chart.js CDN for revenue chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Custom chart data -->
 <script>
-    const labels = {!! json_encode(collect($dailyStats)->pluck('date')) !!};
-    const data = {!! json_encode(collect($dailyStats)->pluck('total_revenue')) !!};
-</script>
-<script src="{{ asset('js/project_1/chart.js') }}"></script>
+    const fmtCurrency = (v) => new Intl.NumberFormat('vi-VN').format(v) + ' đ';
 
+    const revenueByDay = {
+        labels: @json($revenueByDay['labels']),
+        values: @json($revenueByDay['values']),
+    };
+
+    const revenueByMonth = {
+        labels: @json($revenueByMonth['labels']),
+        values: @json($revenueByMonth['values']),
+    };
+
+    const revenueByYear = {
+        labels: @json($revenueByYear['labels']),
+        values: @json($revenueByYear['values']),
+    };
+
+    const orderStatus = {
+        labels: @json($orderStatusStats['labels']),
+        values: @json($orderStatusStats['values']),
+    };
+
+    const customerGrowth = {
+        labels: @json($customerGrowth['labels']),
+        newUsers: @json($customerGrowth['new_users']),
+        cumulative: @json($customerGrowth['cumulative']),
+    };
+
+    new Chart(document.getElementById('revenueDayChart'), {
+        type: 'line',
+        data: {
+            labels: revenueByDay.labels,
+            datasets: [{
+                label: 'Doanh thu',
+                data: revenueByDay.values,
+                borderColor: '#0ea5e9',
+                backgroundColor: 'rgba(14,165,233,.16)',
+                fill: true,
+                tension: 0.35,
+                pointRadius: 2.5,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => fmtCurrency(ctx.parsed.y || 0),
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: (value) => new Intl.NumberFormat('vi-VN').format(value),
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('orderStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: orderStatus.labels,
+            datasets: [{
+                data: orderStatus.values,
+                backgroundColor: ['#f59e0b', '#10b981', '#0ea5e9', '#6366f1', '#ef4444'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('revenueMonthChart'), {
+        type: 'bar',
+        data: {
+            labels: revenueByMonth.labels,
+            datasets: [{
+                label: 'Doanh thu theo tháng',
+                data: revenueByMonth.values,
+                backgroundColor: '#14b8a6',
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => fmtCurrency(ctx.parsed.y || 0),
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('revenueYearChart'), {
+        type: 'bar',
+        data: {
+            labels: revenueByYear.labels,
+            datasets: [{
+                label: 'Doanh thu theo năm',
+                data: revenueByYear.values,
+                backgroundColor: '#3b82f6',
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => fmtCurrency(ctx.parsed.y || 0),
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('customerGrowthChart'), {
+        data: {
+            labels: customerGrowth.labels,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Khách hàng mới',
+                    data: customerGrowth.newUsers,
+                    backgroundColor: '#f59e0b',
+                    yAxisID: 'y',
+                    borderRadius: 5,
+                },
+                {
+                    type: 'line',
+                    label: 'Tổng khách hàng tích lũy',
+                    data: customerGrowth.cumulative,
+                    borderColor: '#0f766e',
+                    backgroundColor: 'rgba(15, 118, 110, .12)',
+                    yAxisID: 'y1',
+                    tension: 0.35,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    position: 'left',
+                },
+                y1: {
+                    beginAtZero: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                }
+            }
+        }
+    });
+</script>
 @endsection
